@@ -97,6 +97,7 @@ async def anime_code_handler(message: Message):
             from_chat_id=post['channel'],
             message_id=post['message_id'],
             reply_markup=button
+        )
     elif code in ["📢 REKLAMA", "💼 HOMIYLIK", "🛠 ADMIN PANEL"]:
         pass
     else:
