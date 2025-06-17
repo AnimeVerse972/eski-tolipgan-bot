@@ -1,16 +1,21 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.client.default import DefaultBotProperties
 from keep_alive import keep_alive
 import asyncio
 import os
 
-API_TOKEN = os.environ.get("BOT_TOKEN")  # .envdan token
+API_TOKEN = os.environ.get("BOT_TOKEN")
 CHANNELS = ['@AniVerseClip']
 ADMINS = [6486825926, 7575041003]
 
-bot = Bot(token=API_TOKEN, parse_mode="Markdown")
+bot = Bot(
+    token=API_TOKEN,
+    default=DefaultBotProperties(parse_mode="Markdown")
+)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
+
 
 keep_alive()
 
