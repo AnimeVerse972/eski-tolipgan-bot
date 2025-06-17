@@ -1,16 +1,16 @@
-import os
 from aiogram import Bot, Dispatcher, types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from keep_alive import keep_alive  # Agar siz Replit yoki shunga o‘xshashda ishlatsangiz
+from aiogram.fsm.storage.memory import MemoryStorage
+from keep_alive import keep_alive
+import asyncio
+import os
 
-# Bot tokenni environmentdan olish
-API_TOKEN = os.getenv("BOT_TOKEN")
+API_TOKEN = os.environ.get("BOT_TOKEN")  # .envdan token
 CHANNELS = ['@AniVerseClip']
 ADMINS = [6486825926, 7575041003]
 
 bot = Bot(token=API_TOKEN, parse_mode="Markdown")
 storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
+dp = Dispatcher(storage=storage)
 
 keep_alive()
 
