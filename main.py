@@ -162,16 +162,23 @@ async def on_startup(app: web.Application):
 
 async def on_shutdown(app: web.Application):
     await bot.delete_webhook()
-
 def main():
     app = web.Application()
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
 
+    # Bot uchun webhook
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=f"/{API_TOKEN}")
-    setup_application(app, dp, bot=bot)
 
+    # UptimeRobot yoki boshqa monitoring uchun asosiy sahifa
+    async def index(request):
+        return web.Response(text="✅ Bot ishlayapti!")
+
+    app.router.add_get("/", index)
+
+    setup_application(app, dp, bot=bot)
     web.run_app(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+
 
 if __name__ == "__main__":
     main()
