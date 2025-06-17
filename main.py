@@ -13,22 +13,56 @@ ADMINS = [6486825926, 7575041003]
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode="Markdown"))
 dp = Dispatcher(storage=MemoryStorage())
 
-# Anime kodlar bazasi
+# ✅ Kodlar bazasi
 anime_posts = {
-    "1": "*Donishmandning qayta tug'ilishi*\n\nhttps://t.me/AniVerseClip/10",
-    "2": "*Baholovchi*\n\nhttps://t.me/AniVerseClip/23",
-    "3": "*O'ta ehtiyotkor o'lmas qahramon*\n\nhttps://t.me/AniVerseClip/35",
-    "4": "*Arifureta*\n\nhttps://t.me/AniVerseClip/49",
-    "5": "*Qalqon qahramoni*\n\nhttps://t.me/AniVerseClip/76",
-    "6": "*Qalqon qahramoni 2-fasl*\n\nhttps://t.me/AniVerseClip/104",
-    "7": "*Oxiridan keyingi boshlanish*\n\nhttps://t.me/AniVerseClip/851",
-    "8": "*Daho Shifokorning soyadagi yangi hayoti*\n\nhttps://t.me/AniVerseClip/127",
-    "9": "*Qahramon Bo'lish X*\n\nhttps://t.me/AniVerseClip/131",
-    "10": "*Real dunyodan haqiqiyroq o'yin*\n\nhttps://t.me/AniVerseClip/135",
-    # ... qolgan kodlar ...
+    "1": {"channel": "@AniVerseClip", "message_id": 10},
+    "2": {"channel": "@AniVerseClip", "message_id": 23},
+    "3": {"channel": "@AniVerseClip", "message_id": 35},
+    "4": {"channel": "@AniVerseClip", "message_id": 49},
+    "5": {"channel": "@AniVerseClip", "message_id": 76},
+    "6": {"channel": "@AniVerseClip", "message_id": 104},
+    "7": {"channel": "@AniVerseClip", "message_id": 851},
+    "8": {"channel": "@AniVerseClip", "message_id": 127},
+    "9": {"channel": "@AniVerseClip", "message_id": 131},
+    "10": {"channel": "@AniVerseClip", "message_id": 135},
+    "11": {"channel": "@AniVerseClip", "message_id": 148},
+    "12": {"channel": "@AniVerseClip", "message_id": 200},
+    "13": {"channel": "@AniVerseClip", "message_id": 216},
+    "14": {"channel": "@AniVerseClip", "message_id": 222},
+    "15": {"channel": "@AniVerseClip", "message_id": 235},
+    "16": {"channel": "@AniVerseClip", "message_id": 260},
+    "17": {"channel": "@AniVerseClip", "message_id": 360},
+    "18": {"channel": "@AniVerseClip", "message_id": 379},
+    "19": {"channel": "@AniVerseClip", "message_id": 392},
+    "20": {"channel": "@AniVerseClip", "message_id": 405},
+    "21": {"channel": "@AniVerseClip", "message_id": 430},
+    "22": {"channel": "@AniVerseClip", "message_id": 309},
+    "23": {"channel": "@AniVerseClip", "message_id": 343},
+    "24": {"channel": "@AniVerseClip", "message_id": 501},
+    "25": {"channel": "@AniVerseClip", "message_id": 514},
+    "26": {"channel": "@AniVerseClip", "message_id": 462},
+    "27": {"channel": "@AniVerseClip", "message_id": 527},
+    "28": {"channel": "@AniVerseClip", "message_id": 542},
+    "29": {"channel": "@AniVerseClip", "message_id": 555},
+    "30": {"channel": "@AniVerseClip", "message_id": 569},
+    "31": {"channel": "@AniVerseClip", "message_id": 586},
+    "32": {"channel": "@AniVerseClip", "message_id": 624},
+    "33": {"channel": "@AniVerseClip", "message_id": 638},
+    "34": {"channel": "@AniVerseClip", "message_id": 665},
+    "35": {"channel": "@AniVerseClip", "message_id": 696},
+    "36": {"channel": "@AniVerseClip", "message_id": 744},
+    "37": {"channel": "@AniVerseClip", "message_id": 776},
+    "38": {"channel": "@AniVerseClip", "message_id": 789},
+    "39": {"channel": "@AniVerseClip", "message_id": 802},
+    "40": {"channel": "@AniVerseClip", "message_id": 815},
+    "41": {"channel": "@AniVerseClip", "message_id": 835},
+    "42": {"channel": "@AniVerseClip", "message_id": 864},
+    "43": {"channel": "@AniVerseClip", "message_id": 918},
+    "44": {"channel": "@AniVerseClip", "message_id": 931},
+    "45": {"channel": "@AniVerseClip", "message_id": 946}
 }
 
-# 🔒 Obuna tekshirish funksiyasi
+# 🔒 Obuna tekshiruv
 async def check_subscription(user_id: int):
     not_subscribed = []
     for channel in CHANNELS:
@@ -40,7 +74,7 @@ async def check_subscription(user_id: int):
             not_subscribed.append(channel)
     return not_subscribed
 
-# ▶️ /start komandasi
+# ▶️ /start
 @dp.message(F.text == "/start")
 async def start_handler(message: Message):
     user_id = message.from_user.id
@@ -67,12 +101,12 @@ async def start_handler(message: Message):
 # 📢 Reklama
 @dp.message(F.text == "📢 Reklama")
 async def reklama_handler(message: Message):
-    await message.answer("📢 Bu yerda bot reklama ma'lumotlari bo'ladi.")
+    await message.answer("Reklama uchun @DiyorbekPTMA ga murojat qiling.")
 
 # 💼 Homiylik
 @dp.message(F.text == "💼 Homiylik")
 async def homiylik_handler(message: Message):
-    await message.answer("💼 Bu yerda homiylik haqida ma'lumot beriladi.")
+    await message.answer("Homiylik uchun karta 8800904257677885")
 
 # 🛠 Admin panel
 @dp.message(F.text == "🛠 Admin panel")
@@ -82,28 +116,39 @@ async def admin_panel_handler(message: Message):
     else:
         await message.answer("⛔ Siz admin emassiz!")
 
-# 🔍 Kodni aniqlash
+# 🔍 Kod qabul qilish
 @dp.message()
 async def anime_code_handler(message: Message):
-    code = message.text.strip().upper()
-    if text in anime_posts:
-        post = anime_posts[text]
-        link = f"https://t.me/{post['channel'].strip('@')}/{post['message_id']}"
-        button = InlineKeyboardMarkup([[InlineKeyboardButton("⬇️ TOMOSHA QILISH", url=link)]])
-        
-        # Postni tugma bilan foydalanuvchiga yuborish
-        context.bot.copy_message(
-            chat_id=user_id,
-            from_chat_id=post['channel'],
-            message_id=post['message_id'],
-            reply_markup=button
+    code = message.text.strip()
+
+    # Maxsus tugmalarni o'tkazib yuborish
+    if code in ["📢 REKLAMA", "💼 HOMIYLIK", "🛠 ADMIN PANEL"]:
+        return
+
+    if code in anime_posts:
+        info = anime_posts[code]
+        channel = info["channel"]
+        msg_id = info["message_id"]
+
+        await bot.copy_message(
+            chat_id=message.chat.id,
+            from_chat_id=channel,
+            message_id=msg_id,
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="📥 Yuklab olish",
+                            url=f"https://t.me/{channel.strip('@')}/{msg_id}"
+                        )
+                    ]
+                ]
+            )
         )
-    elif code in ["📢 REKLAMA", "💼 HOMIYLIK", "🛠 ADMIN PANEL"]:
-        pass
     else:
         await message.answer("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri anime kodini yuboring.")
 
-# ▶️ Botni ishga tushirish
+# ▶️ Ishga tushirish
 async def main():
     keep_alive()
     await dp.start_polling(bot)
