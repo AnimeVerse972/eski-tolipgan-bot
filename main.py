@@ -86,8 +86,17 @@ async def admin_panel_handler(message: Message):
 @dp.message()
 async def anime_code_handler(message: Message):
     code = message.text.strip().upper()
-    if code in anime_posts:
-        await message.answer(f"🔍 Topildi. Ko'rish uchun linkni bosing:\n\n{anime_posts[code]}")
+    if text in anime_posts:
+        post = anime_posts[text]
+        link = f"https://t.me/{post['channel'].strip('@')}/{post['message_id']}"
+        button = InlineKeyboardMarkup([[InlineKeyboardButton("⬇️ TOMOSHA QILISH", url=link)]])
+        
+        # Postni tugma bilan foydalanuvchiga yuborish
+        context.bot.copy_message(
+            chat_id=user_id,
+            from_chat_id=post['channel'],
+            message_id=post['message_id'],
+            reply_markup=button
     elif code in ["📢 REKLAMA", "💼 HOMIYLIK", "🛠 ADMIN PANEL"]:
         pass
     else:
