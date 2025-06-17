@@ -1,11 +1,12 @@
 from aiogram import Bot, Dispatcher, F, types
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from keep_alive import keep_alive
+from aiogram.filters import CommandStart
+from aiogram.fsm.storage.memory import MemoryStorage
 import asyncio
 import os
 
+# 🔐 Token va sozlamalar
 API_TOKEN = os.getenv("BOT_TOKEN")
 CHANNELS = ['@AniVerseClip']
 ADMINS = [6486825926, 7575041003]
@@ -75,25 +76,26 @@ async def check_subscription(user_id: int):
     return not_subscribed
 
 # ▶️ /start
-@dp.message(F.text == "/start")
+@dp.message(CommandStart())
 async def start_handler(message: Message):
     user_id = message.from_user.id
     not_subscribed = await check_subscription(user_id)
 
     if not_subscribed:
-        keyboard = InlineKeyboardMarkup()
-        for ch in not_subscribed:
-            keyboard.add(InlineKeyboardButton(f"🔔 {ch}", url=f"https://t.me/{ch.strip('@')}"))
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=f"🔔 {ch}", url=f"https://t.me/{ch.strip('@')}")]
+            for ch in not_subscribed
+        ])
         await message.answer("⛔ Iltimos, quyidagi kanallarga obuna bo‘ling:", reply_markup=keyboard)
         return
 
     text = "✅ Assalomu alaykum! Anime kodi yuboring (masalan: 1, 2, 3, ...)"
 
     buttons = [
-        [KeyboardButton("📢 Reklama"), KeyboardButton("💼 Homiylik")]
+        [KeyboardButton(text="📢 Reklama"), KeyboardButton(text="💼 Homiylik")]
     ]
     if user_id in ADMINS:
-        buttons.append([KeyboardButton("🛠 Admin panel")])
+        buttons.append([KeyboardButton(text="🛠 Admin panel")])
 
     reply_markup = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
     await message.answer(text, reply_markup=reply_markup)
@@ -106,7 +108,7 @@ async def reklama_handler(message: Message):
 # 💼 Homiylik
 @dp.message(F.text == "💼 Homiylik")
 async def homiylik_handler(message: Message):
-    await message.answer("Homiylik uchun karta 8800904257677885")
+    await message.answer("Homiylik uchun karta: 8800904257677885")
 
 # 🛠 Admin panel
 @dp.message(F.text == "🛠 Admin panel")
@@ -121,8 +123,7 @@ async def admin_panel_handler(message: Message):
 async def anime_code_handler(message: Message):
     code = message.text.strip()
 
-    # Maxsus tugmalarni o'tkazib yuborish
-    if code in ["📢 REKLAMA", "💼 HOMIYLIK", "🛠 ADMIN PANEL"]:
+    if code in ["📢 Reklama", "💼 Homiylik", "🛠 Admin panel"]:
         return
 
     if code in anime_posts:
@@ -135,14 +136,12 @@ async def anime_code_handler(message: Message):
             from_chat_id=channel,
             message_id=msg_id,
             reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [
-                        InlineKeyboardButton(
-                            text="📥 Yuklab olish",
-                            url=f"https://t.me/{channel.strip('@')}/{msg_id}"
-                        )
-                    ]
-                ]
+                inline_keyboard=[[
+                    InlineKeyboardButton(
+                        text="📥 Yuklab olish",
+                        url=f"https://t.me/{channel.strip('@')}/{msg_id}"
+                    )
+                ]]
             )
         )
     else:
@@ -150,7 +149,6 @@ async def anime_code_handler(message: Message):
 
 # ▶️ Ishga tushirish
 async def main():
-    keep_alive()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
