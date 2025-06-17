@@ -1,6 +1,5 @@
 import os
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from keep_alive import keep_alive  # Agar siz Replit yoki shunga o‘xshashda ishlatsangiz
 
@@ -117,5 +116,11 @@ async def anime_code_handler(message: types.Message):
     else:
         await message.reply("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri anime kodini yuboring.")
 
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+import asyncio
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    keep_alive()
+    asyncio.run(main())
