@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.client.default import DefaultBotProperties
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
 import asyncio
@@ -83,9 +83,8 @@ async def start_handler(message: Message):
 
     if not_subscribed:
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=f"🔔 {ch}", url=f"https://t.me/{ch.strip('@')}")]
-            for ch in not_subscribed
-        ])
+            [InlineKeyboardButton(text=f"🔔 {ch}", url=f"https://t.me/{ch.strip('@')}")] for ch in not_subscribed
+        ] + [[InlineKeyboardButton(text="🔁 Tekshirish", callback_data="check_subs")]])
         await message.answer("⛔ Iltimos, quyidagi kanallarga obuna bo‘ling:", reply_markup=keyboard)
         return
 
@@ -99,6 +98,21 @@ async def start_handler(message: Message):
 
     reply_markup = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
     await message.answer(text, reply_markup=reply_markup)
+
+# 🔁 Tekshirish tugmasi uchun callback
+@dp.callback_query(F.data == "check_subs")
+async def check_subscription_callback(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    not_subscribed = await check_subscription(user_id)
+
+    if not_subscribed:
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=f"🔔 {ch}", url=f"https://t.me/{ch.strip('@')}")] for ch in not_subscribed
+        ] + [[InlineKeyboardButton(text="🔁 Tekshirish", callback_data="check_subs")]])
+        await callback.message.edit_text("⛔ Hali ham kanalga obuna emassiz:", reply_markup=keyboard)
+    else:
+        await callback.message.delete()
+        await start_handler(callback.message)
 
 # 📢 Reklama
 @dp.message(F.text == "📢 Reklama")
