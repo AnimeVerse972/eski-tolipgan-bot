@@ -3,8 +3,12 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+
 import asyncio
 import os
+
+from aiohttp import web
 
 # 🔐 Token va sozlamalar
 API_TOKEN = os.getenv("BOT_TOKEN")
@@ -99,7 +103,7 @@ async def start_handler(message: Message):
     reply_markup = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
     await message.answer(text, reply_markup=reply_markup)
 
-# 🔁 Tekshirish tugmasi uchun callback
+# 🔁 Tekshirish tugmasi
 @dp.callback_query(F.data == "check_subs")
 async def check_subscription_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
@@ -161,9 +165,23 @@ async def anime_code_handler(message: Message):
     else:
         await message.answer("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri anime kodini yuboring.")
 
-# ▶️ Ishga tushirish
-async def main():
-    await dp.start_polling(bot)
+# ▶️ Webhook server ishga tushirish
+async def on_startup(app: web.Application):
+    webhook_url = os.getenv("WEBHOOK_URL") + f"/{API_TOKEN}"
+    await bot.set_webhook(webhook_url)
+
+async def on_shutdown(app: web.Application):
+    await bot.delete_webhook()
+
+def main():
+    app = web.Application()
+    app.on_startup.append(on_startup)
+    app.on_shutdown.append(on_shutdown)
+
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=f"/{API_TOKEN}")
+    setup_application(app, dp, bot=bot)
+
+    web.run_app(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
