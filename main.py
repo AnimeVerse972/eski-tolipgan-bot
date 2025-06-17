@@ -1,13 +1,12 @@
+import os
+import asyncio
+
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-
-import asyncio
-import os
-
 from aiohttp import web
 
 # 🔐 Token va sozlamalar
@@ -18,7 +17,7 @@ ADMINS = [6486825926, 7575041003]
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode="Markdown"))
 dp = Dispatcher(storage=MemoryStorage())
 
-# ✅ Kodlar bazasi
+# ✅ Kodlar bazasi (anime_posts)
 anime_posts = {
     "1": {"channel": "@AniVerseClip", "message_id": 10},
     "2": {"channel": "@AniVerseClip", "message_id": 23},
@@ -67,7 +66,7 @@ anime_posts = {
     "45": {"channel": "@AniVerseClip", "message_id": 946}
 }
 
-# 🔒 Obuna tekshiruv
+# 🔒 Obuna tekshirish
 async def check_subscription(user_id: int):
     not_subscribed = []
     for channel in CHANNELS:
@@ -92,18 +91,14 @@ async def start_handler(message: Message):
         await message.answer("⛔ Iltimos, quyidagi kanallarga obuna bo‘ling:", reply_markup=keyboard)
         return
 
-    text = "✅ Assalomu alaykum! Anime kodi yuboring (masalan: 1, 2, 3, ...)"
-
-    buttons = [
-        [KeyboardButton(text="📢 Reklama"), KeyboardButton(text="💼 Homiylik")]
-    ]
+    buttons = [[KeyboardButton(text="📢 Reklama"), KeyboardButton(text="💼 Homiylik")]]
     if user_id in ADMINS:
         buttons.append([KeyboardButton(text="🛠 Admin panel")])
 
-    reply_markup = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
-    await message.answer(text, reply_markup=reply_markup)
+    markup = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+    await message.answer("✅ Anime kodi yuboring (masalan: 1, 2, 3, ...)", reply_markup=markup)
 
-# 🔁 Tekshirish tugmasi
+# 🔁 Tekshirish
 @dp.callback_query(F.data == "check_subs")
 async def check_subscription_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
@@ -121,24 +116,24 @@ async def check_subscription_callback(callback: CallbackQuery):
 # 📢 Reklama
 @dp.message(F.text == "📢 Reklama")
 async def reklama_handler(message: Message):
-    await message.answer("Reklama uchun @DiyorbekPTMA ga murojat qiling.")
+    await message.answer("Reklama uchun: @DiyorbekPTMA")
 
 # 💼 Homiylik
 @dp.message(F.text == "💼 Homiylik")
-async def homiylik_handler(message: Message):
+async def homiy_handler(message: Message):
     await message.answer("Homiylik uchun karta: 8800904257677885")
 
 # 🛠 Admin panel
 @dp.message(F.text == "🛠 Admin panel")
-async def admin_panel_handler(message: Message):
+async def admin_handler(message: Message):
     if message.from_user.id in ADMINS:
-        await message.answer("👮‍♂️ Admin paneliga xush kelibsiz!\nHozircha hech qanday amallar yo‘q.")
+        await message.answer("👮‍♂️ Admin paneliga xush kelibsiz!")
     else:
         await message.answer("⛔ Siz admin emassiz!")
 
-# 🔍 Kod qabul qilish
+# 🔍 Kod orqali anime yuborish
 @dp.message()
-async def anime_code_handler(message: Message):
+async def code_handler(message: Message):
     code = message.text.strip()
 
     if code in ["📢 Reklama", "💼 Homiylik", "🛠 Admin panel"]:
@@ -153,19 +148,14 @@ async def anime_code_handler(message: Message):
             chat_id=message.chat.id,
             from_chat_id=channel,
             message_id=msg_id,
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[
-                    InlineKeyboardButton(
-                        text="📥 Yuklab olish",
-                        url=f"https://t.me/{channel.strip('@')}/{msg_id}"
-                    )
-                ]]
-            )
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="📥 Yuklab olish", url=f"https://t.me/{channel.strip('@')}/{msg_id}")
+            ]])
         )
     else:
-        await message.answer("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri anime kodini yuboring.")
+        await message.answer("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri kod yuboring.")
 
-# ▶️ Webhook server ishga tushirish
+# ▶️ Webhook server
 async def on_startup(app: web.Application):
     webhook_url = os.getenv("WEBHOOK_URL") + f"/{API_TOKEN}"
     await bot.set_webhook(webhook_url)
