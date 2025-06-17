@@ -124,8 +124,9 @@ async def anime_code_handler(message: types.Message):
 import asyncio
 
 async def main():
+    keep_alive()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    keep_alive()
     asyncio.run(main())
+
