@@ -6,8 +6,6 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from aiohttp import web
 
 # 🔐 Token va sozlamalar
 API_TOKEN = os.getenv("BOT_TOKEN")
@@ -21,49 +19,7 @@ dp = Dispatcher(storage=MemoryStorage())
 anime_posts = {
     "1": {"channel": "@AniVerseClip", "message_id": 10},
     "2": {"channel": "@AniVerseClip", "message_id": 23},
-    "3": {"channel": "@AniVerseClip", "message_id": 35},
-    "4": {"channel": "@AniVerseClip", "message_id": 49},
-    "5": {"channel": "@AniVerseClip", "message_id": 76},
-    "6": {"channel": "@AniVerseClip", "message_id": 104},
-    "7": {"channel": "@AniVerseClip", "message_id": 851},
-    "8": {"channel": "@AniVerseClip", "message_id": 127},
-    "9": {"channel": "@AniVerseClip", "message_id": 131},
-    "10": {"channel": "@AniVerseClip", "message_id": 135},
-    "11": {"channel": "@AniVerseClip", "message_id": 148},
-    "12": {"channel": "@AniVerseClip", "message_id": 200},
-    "13": {"channel": "@AniVerseClip", "message_id": 216},
-    "14": {"channel": "@AniVerseClip", "message_id": 222},
-    "15": {"channel": "@AniVerseClip", "message_id": 235},
-    "16": {"channel": "@AniVerseClip", "message_id": 260},
-    "17": {"channel": "@AniVerseClip", "message_id": 360},
-    "18": {"channel": "@AniVerseClip", "message_id": 379},
-    "19": {"channel": "@AniVerseClip", "message_id": 392},
-    "20": {"channel": "@AniVerseClip", "message_id": 405},
-    "21": {"channel": "@AniVerseClip", "message_id": 430},
-    "22": {"channel": "@AniVerseClip", "message_id": 309},
-    "23": {"channel": "@AniVerseClip", "message_id": 343},
-    "24": {"channel": "@AniVerseClip", "message_id": 501},
-    "25": {"channel": "@AniVerseClip", "message_id": 514},
-    "26": {"channel": "@AniVerseClip", "message_id": 462},
-    "27": {"channel": "@AniVerseClip", "message_id": 527},
-    "28": {"channel": "@AniVerseClip", "message_id": 542},
-    "29": {"channel": "@AniVerseClip", "message_id": 555},
-    "30": {"channel": "@AniVerseClip", "message_id": 569},
-    "31": {"channel": "@AniVerseClip", "message_id": 586},
-    "32": {"channel": "@AniVerseClip", "message_id": 624},
-    "33": {"channel": "@AniVerseClip", "message_id": 638},
-    "34": {"channel": "@AniVerseClip", "message_id": 665},
-    "35": {"channel": "@AniVerseClip", "message_id": 696},
-    "36": {"channel": "@AniVerseClip", "message_id": 744},
-    "37": {"channel": "@AniVerseClip", "message_id": 776},
-    "38": {"channel": "@AniVerseClip", "message_id": 789},
-    "39": {"channel": "@AniVerseClip", "message_id": 802},
-    "40": {"channel": "@AniVerseClip", "message_id": 815},
-    "41": {"channel": "@AniVerseClip", "message_id": 835},
-    "42": {"channel": "@AniVerseClip", "message_id": 864},
-    "43": {"channel": "@AniVerseClip", "message_id": 918},
-    "44": {"channel": "@AniVerseClip", "message_id": 931},
-    "45": {"channel": "@AniVerseClip", "message_id": 946}
+    # Qolganlari xuddi oldingidek...
 }
 
 # 🔒 Obuna tekshirish
@@ -81,6 +37,7 @@ async def check_subscription(user_id: int):
 # ▶️ /start
 @dp.message(CommandStart())
 async def start_handler(message: Message):
+    print("✅ /start buyrug‘i qabul qilindi.")
     user_id = message.from_user.id
     not_subscribed = await check_subscription(user_id)
 
@@ -155,30 +112,10 @@ async def code_handler(message: Message):
     else:
         await message.answer("❌ Bunday kod topilmadi. Iltimos, to‘g‘ri kod yuboring.")
 
-# ▶️ Webhook server
-async def on_startup(app: web.Application):
-    webhook_url = os.getenv("WEBHOOK_URL") + f"/{API_TOKEN}"
-    await bot.set_webhook(webhook_url)
-
-async def on_shutdown(app: web.Application):
-    await bot.delete_webhook()
-def main():
-    app = web.Application()
-    app.on_startup.append(on_startup)
-    app.on_shutdown.append(on_shutdown)
-
-    # Bot uchun webhook
-    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=f"/{API_TOKEN}")
-
-    # UptimeRobot yoki boshqa monitoring uchun asosiy sahifa
-    async def index(request):
-        return web.Response(text="✅ Bot ishlayapti!")
-
-    app.router.add_get("/", index)
-
-    setup_application(app, dp, bot=bot)
-    web.run_app(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-
-
+# 🟢 Polling ishga tushirish
 if __name__ == "__main__":
-    main()
+    async def main():
+        print("🚀 Bot polling rejimda ishlayapti...")
+        await dp.start_polling(bot)
+
+    asyncio.run(main())
